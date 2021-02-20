@@ -27,13 +27,17 @@
 					<h1>Project</h1>
 				<p>The project I intend to build is a mood lamp but with a large upper base with fence to showcase figures.</p>
 				<p>
-				the base would be around  25/25cm, height of fence may be around 3cm. Distance from lower base to upper base is 10cm and the lamp is detachable with a small box in the base for it to work like a normal lamp. (All measurements are currently subjected to changes)
+				the base would be around  15/15cm, height of fence may be around 3cm. Distance from lower base to upper base is 8cm.
 				</p>
-				<p>The picture below is my sketch on the lamp:</p>
-				<a href="../images/Project/sketch.jpg">
-					<img src="../images/Project/sketch.jpg" width="500" height="300">
-				</a>
+				<p>	It is supposed to serve as a stand for the item that one put on top, and it will light up when the button is pressed. The first sequence of the light is a glowing a dimming light of red, green then blue. The second sequence is a pink colour light without flashes, and the last sequence is no light, which is also the default colour. </p>
 
+				<p>
+					I have created my sketch of a rough idea on my RGB Figure Stand, which is shown below.
+				</p>
+				<a href="../images/Project/sketch.jpg">
+					     <img src="../images/Project/sketch.jpg" width="500" height="300">
+				 </a>
+				
 				<br><br><br><br>
 
 				<p>There are other sites I used as a reference to my project. Below are links to the sites that I referred to:</p>
@@ -42,11 +46,212 @@
 				<li><a href="https://www.instructables.com/EXQUISITE-MOOD-LAMP/">EXQUISITE MOOD LAMP by makers-sac</a></li>
 				</ul>
 
-				<h2><u>Things I am going to do differently from others</u></h2>
+				<h3>Things I am going to do differently from others</h3>
 				<ul>
-					<li>Make a base and fence to use it to showcase things with a cool lamp shining</li>
-					<li>detechable lamp so that it can be used as both a showcase item and a lamp</li>
+					<li>Make a top base and use it to showcase things with a cool lamp shining</li>
+					<li>a fence on top to make sure that the figure will not drop out from the lamp.</li>
 				</ul>
+
+				<br><br><br><br>
+
+				<h2>Step 1: Materials Needed</h2>
+				<p>
+					Here are the materials I used to make the RGB Figure Stand.
+                 </p>
+                 <ul>
+                 	<li>Ardunio UNO</li>
+                 	<li>Jumper wires</li>
+                 	<li>Push button</li>
+                 	<li>Breadboard</li>
+                 	<li>Neopixel Strip (8 LEDs)</li>
+                 	<li>Plywood</li>
+                 	<li>acrylic plastic (translucent)</li>
+                 	<li>Filament (for 3D printing)</li>
+                 </ul>
+			     	
+
+				<br><br><br><br>
+
+				<h2>Step 2: Circuit Design</h2>
+				<p>
+					My second step is to do the circuit online first on TinkerCAD then transfer to the breadboard. Do up the circuit online so that you do not break any of the components that you use, as a way to save time and resources. Below are some pointers and pictures of the circuit.
+				</p>
+				<ul>
+					<li>push button at pin 6</li>
+					<li>Neopixel strip at pin 12</li>
+				</ul>
+				<a href="../images/Project/Ardunio online.PNG">
+					     <img src="../images/Project/Ardunio online.PNG" width="800" height="500">
+				 </a>
+				 <a href="../images/Project/Circuit_physical.jpg">
+					     <img src="../images/Project/Circuit_physical.jpg" width="500" height="500">
+				 </a>
+
+				<br><br><br><br>
+
+				<h2>Step 3:Ardunio Code</h2>
+				<p>
+					My third step is to do up the ardunio code that is for the RGB light to go for the sequence I want. 
+				</p>
+				  <div style="height:300px;width:600px;border:1px solid  ;overflow:auto;">
+                 <pre>#include (FastLED.h) //replace () with <> 
+#define NUM_LEDS 8 //num_pixels
+CRGB leds[NUM_LEDS];
+#define PIN 12
+
+const int SW = 5;
+int state;   // current state system is in
+int lastreading; // current SW state
+
+void setup() {
+  // setup Uno
+  Serial.begin(4800);
+  pinMode(SW, INPUT); // when SW is not pressed
+  state = -1;    // start with state 0
+
+  FastLED.addLeds<NEOPIXEL, 12>(leds, 8);
+  // initialise variables
+}
+
+void setPixel(int Pixel, byte red, byte green, byte blue)
+#ifdef ADAFRUIT_NEOPIXEL_H
+  // NeoPixel
+  strip.setPixelColor(Pixel, strip.Color(red, green, blue));
+#endif
+#ifndef ADAFRUIT_NEOPIXEL_H
+  // FastLED
+  leds[Pixel].r = red;
+  leds[Pixel].g = green;
+  leds[Pixel].b = blue;
+#endif
+}
+
+void setAll(byte red, byte green, byte blue) {
+  for (int i = 0; i < NUM_LEDS; i++ ) {
+    setPixel(i, red, green, blue);
+  }
+  showStrip();
+}
+
+void showStrip() {
+#ifdef ADAFRUIT_NEOPIXEL_H
+  // NeoPixel
+  strip.show();
+#endif
+#ifndef ADAFRUIT_NEOPIXEL_H
+  // FastLED
+  FastLED.show();
+#endif
+}
+
+int reading = -1;
+int color[3] = {0, 0, 0};
+int fader[2] = {0, 1}; // First Element = Index of colour, Second Element = fade in(1)/out(-1)
+void color_update(){
+  color[fader[0]] += fader[1];
+  if(color[fader[0]] == 255)
+  {
+    fader[1] *= -1;
+  }
+  if(color[fader[0]] == 0 and fader[1] == -1)
+  {
+    fader[0]++;
+    fader[1] *= -1;
+  }
+  if(fader[0] == 3)
+  {
+    fader[0] = 0;
+  }
+  setAll(color[0], color[1], color[2]);
+  showStrip();
+}
+void loop()
+{
+  reading = digitalRead(SW);
+  Serial.println(state);
+  if(reading == LOW and reading != lastreading)
+  {
+      state += 1;
+    if(state == 3)
+    {
+      state = 0;
+    }
+  }
+  switch (state){
+     case 0:
+          color_update();
+          break;
+     case 1:
+          setAll(212, 30, 90);
+          showStrip();
+          delay(10);
+          break;
+     default:
+          setAll(0, 0 ,0);
+          showStrip();
+  }
+  delay(10);
+   lastreading = reading;
+
+  
+}
+</PRE>
+                  </div>
+
+				<br><br><br><br>
+
+				<h2>Step 4: Lazer Cut Parts</h2>
+				<p>
+					Next is to lazer cut the Structure for the RGB Figure Stand. For this part, I used acrylic plastic and plywood.
+					Below are some pointers on the measurements and also a view of the stand I made in Fusion 360.
+				</p>
+				<ul>
+					<li>the top base and the fences on top are in acrylic plastic</li>
+					<li>the rest of the parts in this are in plywood</li>
+					<li>length = breadth = 150mm</li>
+					<li>thickness of acrylic plastic & Plywood = 3mm</li>
+					<li>height of the side piece of plywood = 80mm</li>
+					<li>height of fence is 10mm</li>
+					<li>the amount of fingers for height & base = 3</li>
+					<li>the fence fingers = the fingers for the top part of the sides</li>
+					<li>circle hole at the front = 20mm in diameter</li>
+					<li>square hole at the front = 5mm/5mm</li>
+				</ul>
+				<iframe src="https://ichat1401.autodesk360.com/shares/public/SH56a43QTfd62c1cd96879c9b0010a3d4c7e?mode=embed" width="800" height="600" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"  frameborder="0"></iframe>
+				<a href="../images/Project/lazer_cut_1.jpg">
+					     <img src="../images/Project/lazer_cut_1.jpg" width="600" height="500">
+				 </a>
+				 <a href="../images/Project/lazer_cut_2.jpg">
+					     <img src="../images/Project/lazer_cut_2.jpg" width="400" height="300">
+				 </a>
+
+
+				<br><br><br><br>
+
+				<h2>Step 5: 3D Printed Part</h2>
+				<p>
+					Now, we 3D print a LED stand which will help to hold the LED strip in place. The 3D printed part can be in any colour. Below are some pointers on the measurements and also a view of the LED stand I made in Fusion 360.
+				</p>
+				<ul>
+					<li>thickness = 3mm</li>
+					<li>height of sides = 80mm</li>
+					<li>length of sides = 15mm, thinner sides = 3mm</li>
+					<li>length of the top part = 130mm</li>
+					<li>breadth of top part = length of sides</li>
+					<li>thickness of the side fences = 1mm</li>
+					<li>height of side fences = 3mm</li>
+					<li>height of the middle holder = down by 3mm</li>
+				</ul>
+				<iframe src="https://ichat1401.autodesk360.com/shares/public/SH56a43QTfd62c1cd968f4259aa8478922b5?mode=embed" width="800" height="600" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"  frameborder="0"></iframe>
+				<a href="../images/Project/3D_Print.jpg">
+					     <img src="../images/Project/3D_Print.jpg" width="400" height="300">
+				 </a>
+				
+
+				<br><br><br><br>
+
+				<h2>Step 6: Assemble the parts</h2>
+				<p>The last step is to assemble the parts and that will be the finished product.</p>
 				</div>
 			</div>
 			<div id="footer">
