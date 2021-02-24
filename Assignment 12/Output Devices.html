@@ -1,0 +1,107 @@
+<html>
+	<head>
+		<title>My website</title>
+		<link rel="stylesheet" type="text/css" href="../style.css">
+	</head>
+	<body>
+		<div id="container">
+			<div id="header">
+				<h1>EP1000 Digital Fabrication & Prototyping</h1>
+			</div>
+			<div id="content">
+				<div id="nav">
+					<h3>Navigation</h3>
+					<ul>
+						<li><a href="../index.html">Home</a></li>
+						<li><a href="../about/About.html">About</a></li>
+						<li><a href="../project/project.html">Project</a></li>
+						<li><a href="../Assignment 2 prototyping/Assignment_2.html">Assignment 2:prototyping</a></li>
+						<li><a href="../Assignment 4 html & css/Assignment 4 html & css.html">Assignment 4:html & css</a></li>
+						<li><a href="../Assignment 5 version control/Assignment 5 version control.html">Assignment 5:version control</a></li>
+						<li><a href="../Assignment 6_1/Assignment Computer Aided Design Introduction.html">Assignment:Computer aided design introduction</a></li>
+						<li><a href="../Assignment 6_2/assignment creating models.html">Assignment:creating models</a></li>
+						<li><a href="../Assignment 7/3D Printing.html">Assignment:3D Printing</a></li>
+						<li><a href="../Assignment 8/Lazer cut.html">Assignment:Lazer cutting</a></li>
+						<li><a href="../Assignment 9/electronics.html">Assignment:electronics</a></li>
+						<li><a href="../Assignment 10/embedded Programming.html">Assignment:programming</a></li>
+						<li><a href="../Assignment 11/Input Devices.html">Assignment:Input Devices</a></li>
+						<li><a class="selected" href="">Assignment:Output Devices</a></li>
+					</ul>
+				</div>
+
+				<div id="main">
+					<h2>Output Devices</h2>
+				<p>On this page, I will be showing on how I used TinkerCAD to do up a circuit using a output device called the Neopixel LED strip.</p>
+			
+				<br><br><br><br>
+
+				<h2>Output Devices</h2>
+				<h2><u>Step 1</u></h2>
+				<p>The first step is to connect the circuit to the picture below.</p>
+				<a href="../images/Assignment 12/Step 1.PNG">
+					<img src="../images/Assignment 12/Step 1.PNG" float:right width="900" height="500">
+				</a>
+
+				<br><br><br><br>
+
+				<h2><u>Step 2</u></h2>
+				<p>The second step is to do up the code as to what is shown below.</p>
+				<div style="height:300px;width:600px;border:1px solid  ;overflow:auto;">
+                 <pre>
+#include <Adafruit_NeoPixel.h>
+#define PIN      12
+#define NUMPIXELS 6
+Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+
+#define DELAYVAL 500
+const int PSW = 5;
+
+int lastSWState;   //last state of the SW
+
+void setup()
+{
+  pixels.begin();
+  pinMode(PSW, INPUT);
+  lastSWState = HIGH;  //Switch state
+}
+
+void loop() {
+  
+  int reading = digitalRead(PSW);
+  if (reading == LOW){   //swtich was pressed
+    if (lastSWState ==  HIGH) {  //confirm switch press
+      pixels.clear();
+pixels.setBrightness(10);
+pixels.setPixelColor(0, pixels.Color(255, 255, 255));
+pixels.setPixelColor(1, pixels.Color(255, 0, 0));
+pixels.setPixelColor(2, pixels.Color(0, 255, 0));
+pixels.setPixelColor(3, pixels.Color(0, 0, 255));
+pixels.setPixelColor(4, pixels.Color(255, 0, 255));
+pixels.setPixelColor(5, pixels.Color(255, 255, 0));
+pixels.setPixelColor(6, pixels.Color(0, 255, 255));
+pixels.show();
+      lastSWState = LOW;
+    }
+  }
+  else {    //SW is not pressed
+    lastSWState = HIGH;
+  }
+}
+</pre>
+</div>
+
+				<br><br><br><br>
+
+				<h2><u>Step 3</u></h2>
+				<p>The third step is to test the code and the circuit and make sure it works. And you are done with the output devices.</p>
+				<a href="../images/Assignment 12/Step 3.PNG">
+					<img src="../images/Assignment 12/Step 3.PNG" float:right width="900" height="500">
+				</a>
+				</div>
+			</div>
+			<div id="footer">
+				Copyright &copy:2020 Andre
+			</div>
+		</div>
+	</body>
+</html>

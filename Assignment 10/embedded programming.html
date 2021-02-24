@@ -1,0 +1,213 @@
+<html>
+	<head>
+		<title>My website</title>
+		<link rel="stylesheet" type="text/css" href="../style.css">
+	</head>
+	<body>
+		<div id="container">
+			<div id="header">
+				<h1>EP1000 Digital Fabrication & Prototyping</h1>
+			</div>
+			<div id="content">
+				<div id="nav">
+					<h3>Navigation</h3>
+					<ul>
+						<li><a href="../index.html">Home</a></li>
+						<li><a href="../about/About.html">About</a></li>
+						<li><a href="../project/project.html">Project</a></li>
+						<li><a href="../Assignment 2 prototyping/Assignment_2.html">Assignment 2:prototyping</a></li>
+						<li><a href="../Assignment 4 html & css/Assignment 4 html & css.html">Assignment 4:html & css</a></li>
+						<li><a href="../Assignment 5 version control/Assignment 5 version control.html">Assignment 5:version control</a></li>
+						<li><a href="../Assignment 6_1/Assignment Computer Aided Design Introduction.html">Assignment:Computer aided design introduction</a></li>
+						<li><a href="../Assignment 6_2/assignment creating models.html">Assignment:creating models</a></li>
+						<li><a href="../Assignment 7/3D Printing.html">Assignment:3D Printing</a></li>
+						<li><a href="../Assignment 8/Lazer cut.html">Assignment:Lazer cutting</a></li>
+						<li><a href="../Assignment 9/electronics.html">Assignment:electronics</a></li>
+						<li><a class="selected" href="">Assignment:programming</a></li>
+						<li><a href="../Assignment 11/Input Devices.html">Assignment:Input Devices</a></li>
+						<li><a href="../Assignment 12/Output Devices.html">Assignment:Output Devices</a></li>
+					</ul>
+				</div>
+
+				<div id="main">
+					<h2>Embedded Programming</h2>
+				<p>On this page, I will be showing on how I used TinkerCAD to do up a simple circuit as well as a more complicated one with different states from pressing the button.</p>
+			
+				<br><br><br><br>
+
+				<h2>Simple circuit</h2>
+				<h2><u>Step 1</u></h2>
+				<p>The first step is to go to TinkeCAD and do up the circuit as shown below.</p>
+				<a href="../images/Assignment 10/Step 1_1.PNG">
+					<img src="../images/Assignment 10/Step 1_1.PNG" float:right width="600" height="500">
+				</a>
+
+				<br><br><br><br>
+
+				<h2><u>Step 2</u></h2>
+				<p>The second step is to do up the code, which can be accessed on the top right, Code button. Below is my code, when button is pressed, it will turn the LED on/off depending on the current state.</p>
+				<div style="height:300px;width:600px;border:1px solid  ;overflow:auto;">
+                 <pre>
+
+const int LED = 12;
+const int PSW = 5;
+
+int ledState;   //Current LED state
+int lastSWState;   //last state of the SW
+
+void setup()
+{
+  pinMode(LED, OUTPUT);
+  pinMode(PSW, INPUT);
+  ledState = LOW;  //LED initially low
+  lastSWState = HIGH;  //Switch state
+}
+
+void loop() {
+  
+  int reading = digitalRead(PSW);
+  if (reading == LOW){   //swtich was pressed
+    if (lastSWState ==  HIGH) {  //confirm switch press
+      ledState = !ledState;
+      digitalWrite (LED, ledState);  //toggle LED
+      lastSWState = LOW;
+    }
+  }
+  else {    //SW is not pressed
+    lastSWState = HIGH;
+  }
+}
+</pre>
+</div>
+
+				<br><br><br><br>
+
+				<h2><u>Step 3</u></h2>
+				<p>The third step is to test to see if the code works before transfering to the physical breadboard. If it works, it should be good to be transfered to the physical breadboard.</p>
+				<a href="../images/Assignment 10/Step 1_3.PNG">
+					<img src="../images/Assignment 10/Step 1_3.PNG" float:right width="500" height="500">
+				</a>
+
+				<br><br><br><br>
+				<hr>
+
+				<h2>Circuit with button states</h2>
+				<h2><u>Step 1</u></h2>
+				<p>The first step is to go to TinkerCAD and set up the circuit as shown below.</p>
+				<a href="../images/Assignment 10/Step 2_1.PNG">
+					<img src="../images/Assignment 10/Step 2_1.PNG" float:right width="700" height="500">
+				</a>
+
+				<br><br><br><br>
+
+				<h2><u>Step 2</u></h2>
+				<p>The second step is to do up the code as shown below for the code to work. There are 5 states for this led code. The first is both led off, second is the first led on and second led off, third is first led off and second led on, and forth is both led on, fifth resets to the first.</p>
+				<div style="height:300px;width:600px;border:1px solid  ;overflow:auto;">
+                 <pre>
+                 	/*
+ One SW changing many states
+ SW activates on a press-release
+*/
+
+// ports
+const int LED1 = 13;
+const int LED2 = 12;
+const int SW = 7;
+
+// global variables
+int state;   // current state system is in
+int lastSWState; // current SW state
+
+// functions
+void flash(int led){
+ // flast the led that was passed
+ digitalWrite(led,HIGH);
+ delay(300);
+ digitalWrite(led,LOW);
+ delay(300);
+}
+
+
+
+
+void setup(){
+ // setup Uno
+ pinMode(LED1, OUTPUT);
+ pinMode(LED2, OUTPUT);
+ pinMode(SW, INPUT);
+ // initialise variables
+ lastSWState = HIGH;  // when SW is not pressed
+ state = 0;    // start with state 0
+}
+
+
+void loop(){
+ int reading = digitalRead(SW);  // read the SW
+ if (reading == LOW){
+  // SW was pressed
+  if (lastSWState == HIGH){
+   // Ok, process the SW press
+   // increment the state
+   state = state + 1;
+   if (state == 5)
+    // only states 0,1,2,3,4
+    state = 0;
+   switch(state){
+    case 0:
+     // turn off BOTH LEDs
+     digitalWrite(LED1, LOW);
+     digitalWrite(LED2, LOW);
+     break;
+    case 1:
+     // turn ON LED1
+     digitalWrite(LED1, HIGH);
+     digitalWrite(LED2, LOW);
+     break;
+    case 2:
+     // turn ON LED2
+     digitalWrite(LED1, LOW);
+     digitalWrite(LED2, HIGH);
+     break;
+    case 3:
+     // turn ON LED2
+     digitalWrite(LED1, HIGH);
+     digitalWrite(LED2, HIGH);
+     break;
+    
+   }
+   // don't process any more until SW returns to normal state
+   lastSWState = LOW;
+  }
+ }
+ else {
+  // SW in normal state
+  lastSWState = HIGH;
+ }
+}
+</pre>
+</div>
+
+				<br><br><br><br>
+
+				<h2><u>Step 3</u></h2>
+				<p>The last step is to run the code and see if it works.</p>
+				<a href="../images/Assignment 10/Step 2_3_1.PNG">
+					<img src="../images/Assignment 10/Step 2_3_1.PNG" float:right width="500" height="400">
+				</a>
+				<a href="../images/Assignment 10/Step 2_3_2.PNG">
+					<img src="../images/Assignment 10/Step 2_3_2.PNG" float:right width="500" height="400">
+				</a>
+				<a href="../images/Assignment 10/Step 2_3_3.PNG">
+					<img src="../images/Assignment 10/Step 2_3_3.PNG" float:right width="500" height="400">
+				</a>
+				<a href="../images/Assignment 10/Step 2_3_4.PNG">
+					<img src="../images/Assignment 10/Step 2_3_4.PNG" float:right width="500" height="400">
+				</a>
+				</div>
+			</div>
+			<div id="footer">
+				Copyright &copy:2020 Andre
+			</div>
+		</div>
+	</body>
+</html>
